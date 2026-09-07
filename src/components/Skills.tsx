@@ -53,7 +53,7 @@ export default function Skills() {
         {SKILL_CATEGORIES.map((cat) => (
           <div
             key={cat.category}
-            className="glass-panel glass-panel-hover p-6 sm:p-8 rounded-3xl relative overflow-hidden group"
+            className="glass-panel glass-panel-hover tech-card-corner p-6 sm:p-8 rounded-2xl relative overflow-hidden group"
             data-cursor="STACK"
           >
             {/* Background Oversized Category Number */}
@@ -81,7 +81,7 @@ export default function Skills() {
                 {cat.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 hover:border-[#ccff00] hover:bg-[#ccff00] hover:text-black font-mono text-xs font-semibold text-[#f4f4f5] transition-all duration-300 cursor-pointer"
+                    className="px-3 py-1.5 rounded-md border border-white/10 bg-white/5 hover:border-[#ccff00] hover:bg-[#ccff00]/10 hover:text-[#ccff00] font-mono text-xs font-medium text-[#f4f4f5] transition-all duration-300 cursor-pointer"
                   >
                     {skill}
                   </span>

@@ -105,7 +105,7 @@ export default function Contact() {
 
         {/* Contact Form */}
         <div className="lg:col-span-7">
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-4">
+          <div className="glass-panel tech-card-corner p-6 sm:p-8 rounded-2xl space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1 font-mono text-[11px]">

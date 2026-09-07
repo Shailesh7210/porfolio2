@@ -46,12 +46,12 @@ export default function Services() {
         {SERVICES.map((srv) => (
           <div
             key={srv.title}
-            className="glass-panel glass-panel-hover p-6 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 group h-full"
+            className="glass-panel glass-panel-hover tech-card-corner p-6 sm:p-8 rounded-2xl flex flex-col justify-between space-y-6 group h-full"
             data-cursor="SERVICE"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                   {srv.icon}
                 </div>
                 <span className="font-mono text-xs text-[#888890]">
