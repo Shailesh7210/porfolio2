@@ -49,7 +49,7 @@ export default function Experience() {
         {EXPERIENCES.map((exp) => (
           <div
             key={exp.company}
-            className="glass-panel glass-panel-hover p-6 sm:p-8 rounded-3xl relative"
+            className="glass-panel glass-panel-hover tech-card-corner p-6 sm:p-8 rounded-2xl relative"
             data-cursor="WORK"
           >
             {/* Timeline Dot */}

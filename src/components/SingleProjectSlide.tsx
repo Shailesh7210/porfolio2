@@ -26,12 +26,12 @@ export default function SingleProjectSlide({ project }: { project: ProjectData }
 
       {/* Main Project Card */}
       <div
-        className="glass-panel rounded-3xl p-8 sm:p-12 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 items-center group relative overflow-hidden"
+        className="glass-panel tech-card-corner rounded-2xl p-8 sm:p-12 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 items-center group relative overflow-hidden"
         data-cursor="PROJECT"
       >
         {/* Card Left: Project Visual Graphic Canvas Preview */}
         <div
-          className={`lg:col-span-6 h-72 sm:h-96 rounded-2xl bg-gradient-to-br ${project.gradient} border border-white/10 p-8 flex flex-col justify-between relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-500`}
+          className={`lg:col-span-6 h-72 sm:h-96 rounded-xl bg-gradient-to-br ${project.gradient} border border-white/10 p-8 flex flex-col justify-between relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-500`}
         >
           {/* Background Grid Accent */}
           <div className="absolute inset-0 bg-noise opacity-40"></div>
