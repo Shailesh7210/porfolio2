@@ -195,44 +195,17 @@ export default function WebGLBackground() {
       camera.rotation.x = -targetY;
 
       // Smooth scroll progress interpolation matching section flight distance
-      currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.06;
+      currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.08;
 
-      // Synchronized deep space travel Z-offset
-      const spaceTravelOffset = currentScrollProgress * 550;
+      // Synchronized deep space travel Z-offset using 3D particle group translation
+      const spaceTravelOffset = currentScrollProgress * 500;
+      starField.position.z = spaceTravelOffset % 400;
+      nebulaField.position.z = spaceTravelOffset % 400;
 
       // Continuous gentle ambient rotations
-      starField.rotation.y += 0.00012;
-      starField.rotation.x += 0.00006;
-      nebulaField.rotation.y -= 0.00008;
-
-      // Update Starfield Z Positions in direct sync with section scroll progress
-      const starPosAttr = starGeo.attributes.position as THREE.BufferAttribute;
-      const starArr = starPosAttr.array as Float32Array;
-
-      for (let i = 0; i < starCount; i++) {
-        const zIdx = i * 3 + 2;
-        // Combine base position, continuous ambient drift, and section travel offset
-        let zPos = starOriginalZ[i] + spaceTravelOffset;
-
-        // Wrap around infinite deep space boundaries cleanly
-        while (zPos > 50) zPos -= 650;
-        while (zPos < -600) zPos += 650;
-
-        starArr[zIdx] = zPos;
-      }
-      starPosAttr.needsUpdate = true;
-
-      // Update Nebulae Z Positions for multi-layered spatial depth
-      const nebPosAttr = nebulaGeo.attributes.position as THREE.BufferAttribute;
-      const nebArr = nebPosAttr.array as Float32Array;
-
-      for (let i = 0; i < nebulaCount; i++) {
-        const zIdx = i * 3 + 2;
-        let zPos = nebArr[zIdx] + 0.03 + (targetScrollProgress - currentScrollProgress) * 15;
-        if (zPos > 50) zPos = -650;
-        nebArr[zIdx] = zPos;
-      }
-      nebPosAttr.needsUpdate = true;
+      starField.rotation.y += 0.00015;
+      starField.rotation.x += 0.00008;
+      nebulaField.rotation.y -= 0.0001;
 
       renderer.render(scene, camera);
     };

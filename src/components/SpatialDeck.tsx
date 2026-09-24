@@ -15,6 +15,7 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const stInstanceRef = useRef<any>(null);
 
   useEffect(() => {
     if (!containerRef.current || slideRefs.current.length === 0) return;
@@ -25,21 +26,27 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
-          end: `+=${totalSlides * 250}%`,
+          end: `+=${totalSlides * 180}%`,
           pin: true,
-          scrub: 0.6,
+          scrub: 0.4,
           snap: {
             snapTo: 1 / (totalSlides - 1),
-            duration: { min: 0.3, max: 0.6 },
-            delay: 0.05,
-            ease: 'power1.inOut',
+            duration: { min: 0.2, max: 0.4 },
+            delay: 0.08,
+            ease: 'power1.out',
+            directional: false,
           },
           onUpdate: (self) => {
-            const idx = Math.round(self.progress * (totalSlides - 1));
+            const idx = Math.min(
+              totalSlides - 1,
+              Math.max(0, Math.round(self.progress * (totalSlides - 1)))
+            );
             setActiveIndex(idx);
           },
         },
       });
+
+      stInstanceRef.current = timeline.scrollTrigger;
 
       // Initial state setup for 3D stack
       slideRefs.current.forEach((slide, i) => {
@@ -49,16 +56,16 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
             opacity: 1,
             scale: 1,
             z: 0,
-            filter: 'blur(0px)',
             pointerEvents: 'auto',
+            visibility: 'visible',
           });
         } else {
           gsap.set(slide, {
             opacity: 0,
-            scale: 0.08,
-            z: -2500,
-            filter: 'blur(30px)',
+            scale: 0.15,
+            z: -1800,
             pointerEvents: 'none',
+            visibility: i === 1 ? 'visible' : 'hidden',
           });
         }
       });
@@ -70,20 +77,29 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
 
         if (!currentSlide || !nextSlide) continue;
 
-        // Step transition: current slide flies past camera, next slide zooms in from deep background
+        const stepLabel = `step-${i}`;
+
+        // 1. Current slide zooms forward into camera and disappears
         timeline
-          // 1. Current slide zooms forward into camera and disappears
           .to(
             currentSlide,
             {
-              scale: 3.5,
-              z: 1200,
+              scale: 2.5,
+              z: 800,
               opacity: 0,
-              filter: 'blur(25px)',
               pointerEvents: 'none',
               ease: 'power1.in',
+              onStart: () => {
+                if (currentSlide) currentSlide.style.visibility = 'visible';
+              },
+              onComplete: () => {
+                if (currentSlide) currentSlide.style.visibility = 'hidden';
+              },
+              onReverseComplete: () => {
+                if (currentSlide) currentSlide.style.visibility = 'visible';
+              },
             },
-            `step-${i}`
+            stepLabel
           )
           // 2. Next slide flies in from deep space to screen center
           .to(
@@ -92,11 +108,16 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
               scale: 1,
               z: 0,
               opacity: 1,
-              filter: 'blur(0px)',
               pointerEvents: 'auto',
               ease: 'power2.out',
+              onStart: () => {
+                if (nextSlide) nextSlide.style.visibility = 'visible';
+              },
+              onReverseComplete: () => {
+                if (nextSlide) nextSlide.style.visibility = 'hidden';
+              },
             },
-            `step-${i}`
+            stepLabel
           );
       }
     }, containerRef);
@@ -105,14 +126,18 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
   }, [sections]);
 
   const scrollToSlide = (index: number) => {
-    if (!containerRef.current) return;
+    if (index === 0) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (!stInstanceRef.current) return;
+    const st = stInstanceRef.current;
     const totalSlides = sections.length;
-    const scrollTarget =
-      containerRef.current.offsetTop +
-      (index / (totalSlides - 1)) * (containerRef.current.offsetHeight * (totalSlides - 1));
+    const targetScroll = st.start + (index / (totalSlides - 1)) * (st.end - st.start);
 
     window.scrollTo({
-      top: scrollTarget,
+      top: targetScroll,
       behavior: 'smooth',
     });
   };
@@ -134,7 +159,7 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
               slideRefs.current[idx] = el;
             }}
             id={section.id}
-            className="absolute inset-0 w-full h-full flex items-center justify-center p-6 sm:p-16 lg:p-24 will-change-transform"
+            className="absolute inset-0 w-full h-full flex items-center justify-center p-6 sm:p-12 lg:p-16 will-change-transform"
             style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}
           >
             <div className="w-full max-w-7xl mx-auto h-full flex flex-col justify-center">
