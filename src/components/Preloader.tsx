@@ -12,30 +12,31 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
-    // Lock body scroll during loading phase
+    // Lock body scroll during initialization
     document.body.style.overflow = 'hidden';
 
     let frameId: number;
     let startTimestamp: number | null = null;
-    const duration = 2400; // 2.4s smooth progress timing
+    const duration = 6500; // 6.5s total loading duration for ample screen reading time
 
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const elapsed = timestamp - startTimestamp;
       const progressRatio = Math.min(elapsed / duration, 1);
       
-      // Smooth cubic easing for percentage progression
-      const easeProgress = Math.round((1 - Math.pow(1 - progressRatio, 3)) * 100);
+      // High-precision smooth cubic easing for percentage progression
+      const easeProgress = Math.round((1 - Math.pow(1 - progressRatio, 2.2)) * 100);
       setProgress(easeProgress);
 
       if (progressRatio < 1) {
         frameId = requestAnimationFrame(step);
       } else {
+        // Generous 1.5s hold pause at 100% so "FULL STACK DEVELOPER" has plenty of screen time
         setTimeout(() => {
           setIsComplete(true);
           document.body.style.overflow = 'unset';
           onComplete();
-        }, 300);
+        }, 1500);
       }
     };
 
@@ -47,92 +48,117 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     };
   }, [onComplete]);
 
-  // Determine current intro phrase based on loading progression window
-  let currentPhrase = "HI, I AM";
-  if (progress >= 35 && progress < 70) {
-    currentPhrase = "SHAILESH JAISWAL";
-  } else if (progress >= 70) {
-    currentPhrase = "FULL STACK DEVELOPER";
+  // Extended Phase timing for comfortable screen reading
+  let phaseTitle = "HI, I AM";
+  let phaseSub = "// 01. WELCOME TO CREATIVE PORTFOLIO";
+  if (progress >= 30 && progress < 60) {
+    phaseTitle = "SHAILESH JAISWAL";
+    phaseSub = "// 02. MERN STACK & GEN AI ARCHITECT";
+  } else if (progress >= 60) {
+    phaseTitle = "FULL STACK DEVELOPER";
+    phaseSub = "// 03. BENGALURU, KARNATAKA, INDIA";
   }
 
-  const gateTransition = {
-    duration: 1.1,
-    ease: [0.85, 0, 0.15, 1] as const,
-  };
+  const slabEase = [0.83, 0, 0.17, 1] as const;
 
   return (
     <AnimatePresence>
       {!isComplete && (
-        <div className="fixed inset-0 z-[100] select-none pointer-events-auto flex overflow-hidden">
-          {/* Left Opening Gate Panel */}
+        <div className="fixed inset-0 z-[100] select-none pointer-events-auto overflow-hidden bg-[#040507]">
+          {/* Top Monolithic Shutter Slab */}
           <motion.div
-            initial={{ x: '0%' }}
-            exit={{ x: '-100%' }}
-            transition={gateTransition}
-            className="w-1/2 h-full bg-[#070708] bg-noise border-r border-[#ccff00]/30 relative z-20 flex flex-col justify-between p-6 sm:p-12"
+            initial={{ y: '0%' }}
+            exit={{ y: '-100%' }}
+            transition={{ duration: 1.2, ease: slabEase }}
+            className="absolute top-0 left-0 right-0 h-1/2 bg-[#07070a] bg-noise border-b border-[#ccff00]/30 z-20 flex flex-col justify-between p-6 sm:p-12"
           >
-            {/* Top Left Branding */}
-            <div className="font-mono text-xs tracking-widest text-[#888890] uppercase flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#ccff00] animate-ping"></span>
-              <span>SHAILESH JAISWAL</span>
-            </div>
-
-            {/* Bottom Info Left */}
-            <div className="font-mono text-[10px] sm:text-xs text-[#888890] uppercase">
-              <span>SYSTEM INITIALIZING // 2026</span>
+            {/* Top Header Telemetry */}
+            <div className="flex items-center justify-between font-mono text-xs tracking-widest text-[#888890] uppercase">
+              <div className="flex items-center gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ccff00] animate-ping"></span>
+                <span className="text-[#f4f4f5] font-bold">SHAILESH JAISWAL</span>
+              </div>
+              <div className="hidden sm:flex items-center gap-6 text-[10px]">
+                <span>LATENCY: 0.2MS</span>
+                <span>STATUS: ONLINE</span>
+                <span className="text-[#ccff00]">PORTFOLIO OS // V2.0</span>
+              </div>
             </div>
           </motion.div>
 
-          {/* Right Opening Gate Panel */}
+          {/* Bottom Monolithic Shutter Slab */}
           <motion.div
-            initial={{ x: '0%' }}
-            exit={{ x: '100%' }}
-            transition={gateTransition}
-            className="w-1/2 h-full bg-[#070708] bg-noise border-l border-[#ccff00]/30 relative z-20 flex flex-col justify-between p-6 sm:p-12"
+            initial={{ y: '0%' }}
+            exit={{ y: '100%' }}
+            transition={{ duration: 1.2, ease: slabEase }}
+            className="absolute bottom-0 left-0 right-0 h-1/2 bg-[#07070a] bg-noise border-t border-[#ccff00]/30 z-20 flex flex-col justify-end p-6 sm:p-12"
           >
-            {/* Top Right Status */}
-            <div className="font-mono text-xs tracking-widest text-[#ccff00] uppercase text-right">
-              <span>PORTFOLIO OS // V2.0</span>
-            </div>
-
-            {/* Bottom Info Right */}
-            <div className="font-mono text-[10px] sm:text-xs text-[#888890] uppercase text-right">
-              <span>BENGALURU, INDIA</span>
+            {/* Bottom Progress Line */}
+            <div className="w-full max-w-5xl mx-auto space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between text-[#888890]">
+                <span>INITIALIZING SPATIAL FLIGHT DECK</span>
+                <span className="text-[#ccff00] font-bold">{progress}% COMPLETED</span>
+              </div>
+              <div className="w-full h-1 bg-white/10 overflow-hidden relative rounded-full">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-[#00f0ff] via-[#ccff00] to-[#ccff00] rounded-full shadow-[0_0_15px_#ccff00]"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
           </motion.div>
 
-          {/* Center Stage Floating Content (Layered over the opening gates) */}
+          {/* Center Stage Floating Content (Layered over the monolithic shutters) */}
           <motion.div
             initial={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.5 } }}
-            className="absolute inset-0 z-30 flex flex-col items-center justify-center p-8 pointer-events-none"
+            exit={{ opacity: 0, scale: 1.15, filter: 'blur(20px)', transition: { duration: 0.7 } }}
+            className="absolute inset-0 z-30 flex flex-col items-center justify-center p-6 pointer-events-none"
           >
-            {/* Animated Sequential Intro Phrase */}
-            <div className="h-16 sm:h-24 overflow-hidden mb-2 text-center">
+            {/* Rotating Background Tech Aperture Ring */}
+            <div className="absolute w-72 h-72 sm:w-[480px] sm:h-[480px] rounded-full border border-dashed border-[#ccff00]/20 animate-[spin_15s_linear_infinite] flex items-center justify-center">
+              <div className="w-56 h-56 sm:w-[360px] sm:h-[360px] rounded-full border border-dotted border-[#00f0ff]/25 animate-[spin_10s_linear_infinite_reverse]"></div>
+            </div>
+
+            {/* Subtext Badge */}
+            <div className="relative z-10 overflow-hidden mb-4">
               <AnimatePresence mode="wait">
-                <motion.h2
-                  key={currentPhrase}
-                  initial={{ y: 40, opacity: 0, filter: 'blur(10px)' }}
-                  animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                  exit={{ y: -40, opacity: 0, filter: 'blur(10px)' }}
-                  transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
-                  className="font-extrabold text-3xl sm:text-6xl md:text-7xl tracking-tighter uppercase text-[#ccff00] font-mono drop-shadow-[0_0_25px_rgba(204,255,0,0.3)]"
+                <motion.div
+                  key={phaseSub}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-mono text-xs sm:text-sm text-[#00f0ff] uppercase tracking-widest bg-white/5 border border-[#00f0ff]/30 px-4 py-1.5 rounded-full backdrop-blur-md"
                 >
-                  {currentPhrase}
-                </motion.h2>
+                  {phaseSub}
+                </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Giant 0-100% Loading Counter */}
-            <div className="flex items-baseline justify-center">
-              <span className="font-extrabold tracking-tighter text-[16vw] sm:text-[14vw] leading-none font-mono text-[#f4f4f5]">
+            {/* Title Text (Spacious Container - Never Cuts Off "DEVELOPER") */}
+            <div className="relative z-10 min-h-[110px] sm:min-h-[140px] flex items-center justify-center text-center max-w-6xl px-4 my-2">
+              <AnimatePresence mode="wait">
+                <motion.h1
+                  key={phaseTitle}
+                  initial={{ y: 50, opacity: 0, filter: 'blur(12px)', scale: 0.95 }}
+                  animate={{ y: 0, opacity: 1, filter: 'blur(0px)', scale: 1 }}
+                  exit={{ y: -50, opacity: 0, filter: 'blur(12px)', scale: 1.05 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-extrabold text-3xl sm:text-5xl md:text-7xl lg:text-8xl tracking-tight uppercase text-[#f4f4f5] font-mono leading-tight"
+                >
+                  {phaseTitle}
+                  <span className="text-[#ccff00]">.</span>
+                </motion.h1>
+              </AnimatePresence>
+            </div>
+
+            {/* Giant Digital Counter */}
+            <div className="relative z-10 flex items-baseline justify-center">
+              <span className="font-extrabold tracking-tighter text-[18vw] sm:text-[13vw] leading-none font-mono text-transparent bg-clip-text bg-gradient-to-b from-white via-[#f4f4f5] to-white/10 select-none">
                 {progress < 10 ? `0${progress}` : progress}
               </span>
               <span className="font-mono text-3xl sm:text-6xl text-[#ccff00] font-light">%</span>
             </div>
-
-            {/* Center Gate Seam Laser Line */}
-            <div className="w-64 max-w-full h-[2px] bg-gradient-to-r from-transparent via-[#ccff00] to-transparent mt-4 opacity-80 animate-pulse"></div>
           </motion.div>
         </div>
       )}
