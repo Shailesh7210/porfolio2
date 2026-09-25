@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Send, Mail, Phone, MapPin, ArrowUpRight, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function Contact() {
@@ -47,28 +48,68 @@ export default function Contact() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, filter: 'blur(8px)' },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
+
+  const titleWords = "LET'S BUILD SOMETHING".split(' ');
+
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-12 sm:space-y-16">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-50px' }}
+      className="w-full max-w-7xl mx-auto space-y-12 sm:space-y-16"
+    >
       {/* Header */}
-      <div className="flex items-center gap-3 font-mono text-xs text-[#ccff00] uppercase tracking-widest">
+      <motion.div variants={itemVariants} className="flex items-center gap-3 font-mono text-xs text-[#ccff00] uppercase tracking-widest">
         <span>// 06. CONTACT</span>
         <div className="h-[1px] w-24 bg-[#ccff00]/30"></div>
-      </div>
+      </motion.div>
 
-      {/* Huge Title */}
-      <div>
+      {/* Huge Title Word-by-Word Reveal */}
+      <motion.div variants={itemVariants}>
         <h2
-          className="text-display-sub font-extrabold tracking-tighter text-[#f4f4f5] leading-none max-w-4xl"
+          className="text-display-sub font-extrabold tracking-tighter text-[#f4f4f5] leading-none max-w-4xl flex flex-wrap gap-x-3 gap-y-1"
           data-cursor="CONTACT"
         >
-          LET&apos;S BUILD SOMETHING<span className="text-[#ccff00]">.</span>
+          {titleWords.map((word, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.45, delay: i * 0.08 }}
+              viewport={{ once: true }}
+            >
+              {word}
+            </motion.span>
+          ))}
+          <span className="text-[#ccff00]">.</span>
         </h2>
-      </div>
+      </motion.div>
 
       {/* Layout Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8 border-t border-white/10">
         {/* Direct Details */}
-        <div className="lg:col-span-5 space-y-4 font-mono text-xs">
+        <motion.div variants={itemVariants} className="lg:col-span-5 space-y-4 font-mono text-xs">
           <p className="text-sm sm:text-base text-[#888890] font-light max-w-md font-sans">
             Available for full-stack engineering roles, freelance agency partnerships, and AI agent workflow implementations.
           </p>
@@ -101,10 +142,10 @@ export default function Contact() {
             <MapPin className="text-[#a78bfa]" size={18} />
             <span>Bengaluru, Karnataka, India</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Contact Form */}
-        <div className="lg:col-span-7">
+        <motion.div variants={itemVariants} className="lg:col-span-7">
           <div className="glass-panel tech-card-corner p-6 sm:p-8 rounded-2xl space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -176,8 +217,8 @@ export default function Contact() {
               </button>
             </form>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
