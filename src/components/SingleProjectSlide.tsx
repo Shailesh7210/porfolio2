@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
 export interface ProjectData {
@@ -16,13 +17,42 @@ export interface ProjectData {
 }
 
 export default function SingleProjectSlide({ project }: { project: ProjectData }) {
+  const containerVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.16, 1, 0.3, 1],
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20, filter: 'blur(6px)' },
+    visible: {
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: { duration: 0.5 },
+    },
+  };
+
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-10 sm:space-y-12">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-50px' }}
+      className="w-full max-w-7xl mx-auto space-y-10 sm:space-y-12"
+    >
       {/* Slide Sub-Header */}
-      <div className="flex items-center justify-between font-mono text-xs text-[#ccff00] uppercase tracking-widest">
+      <motion.div variants={itemVariants} className="flex items-center justify-between font-mono text-xs text-[#ccff00] uppercase tracking-widest">
         <span>// SELECTED PROJECT [{project.number} / 04]</span>
         <span>{project.category}</span>
-      </div>
+      </motion.div>
 
       {/* Main Project Card */}
       <div
@@ -30,7 +60,8 @@ export default function SingleProjectSlide({ project }: { project: ProjectData }
         data-cursor="PROJECT"
       >
         {/* Card Left: Project Visual Graphic Canvas Preview */}
-        <div
+        <motion.div
+          variants={itemVariants}
           className={`lg:col-span-6 h-72 sm:h-96 rounded-xl bg-gradient-to-br ${project.gradient} border border-white/10 p-8 flex flex-col justify-between relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-500`}
         >
           {/* Background Grid Accent */}
@@ -44,7 +75,7 @@ export default function SingleProjectSlide({ project }: { project: ProjectData }
               [{project.number}]
             </span>
             <span
-              className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-black"
+              className="px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-black shadow-md"
               style={{ backgroundColor: project.accent }}
             >
               {project.category.split('/')[0]}
@@ -59,10 +90,10 @@ export default function SingleProjectSlide({ project }: { project: ProjectData }
               {project.title}
             </h3>
           </div>
-        </div>
+        </motion.div>
 
         {/* Card Right: Metadata & Details */}
-        <div className="lg:col-span-6 space-y-6 lg:pl-6">
+        <motion.div variants={itemVariants} className="lg:col-span-6 space-y-6 lg:pl-6">
           <div className="flex items-center gap-3 font-mono text-xs text-[#888890] uppercase tracking-wider">
             <span className="text-[#ccff00]">●</span>
             <span>{project.category}</span>
@@ -78,13 +109,17 @@ export default function SingleProjectSlide({ project }: { project: ProjectData }
 
           {/* Tech Stack Badges */}
           <div className="flex flex-wrap gap-2 pt-2">
-            {project.techStack.map((tech) => (
-              <span
+            {project.techStack.map((tech, tIdx) => (
+              <motion.span
                 key={tech}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.25, delay: tIdx * 0.05 }}
+                viewport={{ once: true }}
                 className="px-3 py-1 rounded-md border border-white/10 bg-white/5 font-mono text-xs text-[#888890]"
               >
                 {tech}
-              </span>
+              </motion.span>
             ))}
           </div>
 
@@ -118,8 +153,8 @@ export default function SingleProjectSlide({ project }: { project: ProjectData }
               </a>
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

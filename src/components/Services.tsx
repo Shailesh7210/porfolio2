@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Code2, Bot, Gauge } from 'lucide-react';
 
 const SERVICES = [
@@ -28,10 +29,38 @@ const SERVICES = [
 ];
 
 export default function Services() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 35, scale: 0.96, filter: 'blur(8px)' },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      filter: 'blur(0px)',
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
+
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-14 sm:space-y-16">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-50px' }}
+      className="w-full max-w-7xl mx-auto space-y-14 sm:space-y-16"
+    >
       {/* Section Header */}
-      <div className="space-y-2">
+      <motion.div variants={itemVariants} className="space-y-2">
         <div className="flex items-center gap-3 font-mono text-xs text-[#ccff00] uppercase tracking-widest">
           <span>// 05. CAPABILITIES</span>
           <div className="h-[1px] w-24 bg-[#ccff00]/30"></div>
@@ -39,19 +68,20 @@ export default function Services() {
         <h2 className="text-display-sub font-extrabold tracking-tighter text-[#f4f4f5]">
           SERVICES & EXPERTISE<span className="text-[#ccff00]">.</span>
         </h2>
-      </div>
+      </motion.div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
         {SERVICES.map((srv) => (
-          <div
+          <motion.div
             key={srv.title}
+            variants={itemVariants}
             className="glass-panel glass-panel-hover tech-card-corner p-6 sm:p-8 rounded-2xl flex flex-col justify-between space-y-6 group h-full"
             data-cursor="SERVICE"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10 group-hover:border-[#ccff00]/50 transition-colors">
                   {srv.icon}
                 </div>
                 <span className="font-mono text-xs text-[#888890]">
@@ -71,9 +101,9 @@ export default function Services() {
             <div className="pt-3 border-t border-white/5 font-mono text-xs text-[#888890] group-hover:text-white transition-colors">
               PRODUCTION READY →
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
