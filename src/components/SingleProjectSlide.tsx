@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
 export interface ProjectData {
@@ -17,7 +17,7 @@ export interface ProjectData {
 }
 
 export default function SingleProjectSlide({ project }: { project: ProjectData }) {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -30,7 +30,7 @@ export default function SingleProjectSlide({ project }: { project: ProjectData }
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20, filter: 'blur(6px)' },
     visible: {
       opacity: 1,
