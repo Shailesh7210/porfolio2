@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Briefcase, Calendar, MapPin } from 'lucide-react';
 
 const EXPERIENCES = [
@@ -32,7 +32,7 @@ const EXPERIENCES = [
 ];
 
 export default function Experience() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -43,7 +43,7 @@ export default function Experience() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, x: -30, filter: 'blur(8px)' },
     visible: {
       opacity: 1,
