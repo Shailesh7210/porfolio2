@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from '@/lib/gsap';
 
 interface SpatialDeckProps {
@@ -16,6 +16,23 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const stInstanceRef = useRef<any>(null);
+
+  const scrollToSlide = useCallback((index: number) => {
+    if (index === 0) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (!stInstanceRef.current) return;
+    const st = stInstanceRef.current;
+    const totalSlides = sections.length;
+    const targetScroll = st.start + (index / (totalSlides - 1)) * (st.end - st.start);
+
+    window.scrollTo({
+      top: targetScroll,
+      behavior: 'smooth',
+    });
+  }, [sections.length]);
 
   useEffect(() => {
     if (!containerRef.current || slideRefs.current.length === 0) return;
@@ -42,6 +59,14 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
               Math.max(0, Math.round(self.progress * (totalSlides - 1)))
             );
             setActiveIndex(idx);
+
+            if (typeof window !== 'undefined' && sections[idx]) {
+              window.dispatchEvent(
+                new CustomEvent('spatialSectionChange', {
+                  detail: { activeId: sections[idx].id, index: idx },
+                })
+              );
+            }
           },
         },
       });
@@ -125,22 +150,32 @@ export default function SpatialDeck({ sections }: SpatialDeckProps) {
     return () => ctx.revert();
   }, [sections]);
 
-  const scrollToSlide = (index: number) => {
-    if (index === 0) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
+  // Handle custom navigation events (from Navbar, Hero buttons, or link clicks)
+  useEffect(() => {
+    const handleNavEvent = (e: any) => {
+      const targetId = e.detail?.id;
+      if (!targetId) return;
 
-    if (!stInstanceRef.current) return;
-    const st = stInstanceRef.current;
-    const totalSlides = sections.length;
-    const targetScroll = st.start + (index / (totalSlides - 1)) * (st.end - st.start);
+      let targetIndex = sections.findIndex((sec) => sec.id === targetId);
 
-    window.scrollTo({
-      top: targetScroll,
-      behavior: 'smooth',
-    });
-  };
+      if (targetIndex === -1) {
+        if (targetId === 'projects' || targetId.startsWith('project')) {
+          targetIndex = sections.findIndex(
+            (sec) => sec.id === 'projects' || sec.id.startsWith('project')
+          );
+        }
+      }
+
+      if (targetIndex !== -1) {
+        scrollToSlide(targetIndex);
+      }
+    };
+
+    window.addEventListener('navigateToSpatialSection', handleNavEvent as any);
+    return () => {
+      window.removeEventListener('navigateToSpatialSection', handleNavEvent as any);
+    };
+  }, [sections, scrollToSlide]);
 
   return (
     <div

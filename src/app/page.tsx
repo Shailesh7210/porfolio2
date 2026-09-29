@@ -75,7 +75,7 @@ export default function Home() {
     { id: 'about', label: 'About', component: <About /> },
     { id: 'skills', label: 'Skills', component: <Skills /> },
     {
-      id: 'project-1',
+      id: 'projects',
       label: 'NGO Threads of Hope',
       component: <SingleProjectSlide project={PROJECTS[0]} />,
     },
