@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 import { ArrowDownRight } from 'lucide-react';
+import { scrollToSpatialSection } from '@/lib/navigation';
 
 interface HeroProps {
   ready?: boolean;
@@ -61,6 +62,11 @@ export default function Hero({ ready = true }: HeroProps) {
     return () => ctx.revert();
   }, [ready]);
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    scrollToSpatialSection(id);
+  };
+
   return (
     <section
       id="hero"
@@ -104,6 +110,7 @@ export default function Hero({ ready = true }: HeroProps) {
         <div className="lg:col-span-5 flex flex-col sm:flex-row items-start sm:items-center lg:justify-end gap-4">
           <a
             href="#projects"
+            onClick={(e) => handleNavClick(e, 'projects')}
             className="group px-8 py-4 rounded-full bg-[#ccff00] text-black font-mono text-xs font-extrabold uppercase tracking-wider hover:bg-white transition-colors duration-300 flex items-center gap-3 shadow-lg shadow-[#ccff00]/10"
             data-cursor="EXPLORE"
           >
@@ -112,6 +119,7 @@ export default function Hero({ ready = true }: HeroProps) {
           </a>
           <a
             href="#contact"
+            onClick={(e) => handleNavClick(e, 'contact')}
             className="px-8 py-4 rounded-full border border-white/15 bg-white/5 hover:border-white text-white font-mono text-xs font-bold uppercase tracking-wider transition-colors duration-300"
             data-cursor="CONTACT"
           >
